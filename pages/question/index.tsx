@@ -4,6 +4,7 @@ import {ChangeEvent, JSX, useState} from "react";
 import {questions} from "../../utils/questions";
 import {QuestionType} from "../../interfaces/types/question";
 import {Answer} from "../../interfaces/types/answer";
+import styles from './style.module.css';
 
 const QuestionPage: NextPage = () => {
 
@@ -74,29 +75,37 @@ const QuestionPage: NextPage = () => {
             case QuestionType.text:
                 return (
                     <div>
-                        <h2>{questions[currentQuestionIdx].questionText}</h2>
-                        {/*<input type="text" value={getAnswer(currentQuestionIdx, QuestionType.text) as string}*/}
-                        {/*       onChange={handleInputChange}/>*/}
-                        <input type="text"
-                               value={currentAnswer as string}
-                               onChange={handleInputChange}/>
+                        <div className={styles.questionText}>
+                            <h2>{questions[currentQuestionIdx].questionText}</h2>
+                        </div>
+                        <div className={styles.inputField}>
+                            <input type="text"
+                                   value={currentAnswer as string}
+                                   onChange={handleInputChange}/>
+                        </div>
                     </div>
                 )
             case QuestionType.number:
                 return (
                     <div>
-                        <h2>{questions[currentQuestionIdx].questionText}</h2>
-                        <input type="number"
-                               value={currentAnswer as number}
-                               onChange={handleInputChange}/>
+                        <div className={styles.questionText}>
+                            <h2>{questions[currentQuestionIdx].questionText}</h2>
+                        </div>
+                        <div className={styles.inputField}>
+                            <input type="number"
+                                   value={currentAnswer as number}
+                                   onChange={handleInputChange}/>
+                        </div>
                     </div>
                 )
             case QuestionType.singleChoice:
                 return (
-                    <div>
-                        <h2>{questions[currentQuestionIdx].questionText}</h2>
+                    <div className={styles.choiceContainer}>
+                        <div className={styles.questionText}>
+                            <h2>{questions[currentQuestionIdx].questionText}</h2>
+                        </div>
                         {questions[currentQuestionIdx].choice.map((choice) => (
-                            <div key={choice.id}>
+                            <div key={choice.id} className={styles.radioInput}>
                                 <input
                                     type="radio"
                                     name="singleChoice"
@@ -113,37 +122,39 @@ const QuestionPage: NextPage = () => {
         }
     }
 
-    console.log('index:' + currentQuestionIdx)
-    console.log('currentAnswer:' + currentAnswer)
-    console.log('answers:' + answers)
+    // console.log('index:' + currentQuestionIdx)
+    // console.log('currentAnswer:' + currentAnswer)
+    // console.log('answers:' + answers)
 
     return (
         <Layout title="Question | 質問">
-            {currentQuestionIdx < questions.length ? (
-                <>
-                    {/* 質問 */}
-                    {buildQuestionElement(questions[currentQuestionIdx].type)}
-                    <div style={{marginTop: '20px'}}>
-                        {/* 戻るボタン */}
-                        {currentQuestionIdx > 0 && (
-                            <button onClick={handlePreviousQuestion} style={{marginRight: '10px'}}>
-                                戻る
+            <div className={styles.container}>
+                {currentQuestionIdx < questions.length ? (
+                    <>
+                        {/* 質問 */}
+                        {buildQuestionElement(questions[currentQuestionIdx].type)}
+                        <div className={styles.buttonContainer}>
+                            {/* 戻るボタン */}
+                            {currentQuestionIdx > 0 && (
+                                <button onClick={handlePreviousQuestion} className={styles.button}>
+                                    戻る
+                                </button>
+                            )}
+                            {/* 次へボタン */}
+                            <button onClick={handleNextQuestion} className={styles.button}>
+                                {currentQuestionIdx === questions.length - 1 ? '提出' : '次へ'}
                             </button>
-                        )}
-                        {/* 次へボタン */}
-                        <button onClick={handleNextQuestion}>
-                            {currentQuestionIdx === questions.length - 1 ? '提出' : '次へ'}
-                        </button>
+                        </div>
+                    </>
+                ) : (
+                    // 結果ページ
+                    <div className={styles.resultsContainer}>
+                        {answers.map((answer, index) => (
+                            <div key={index}>{answer}</div>
+                        ))}
                     </div>
-                </>
-            ) : (
-                // 結果ページ
-                <div>
-                    {answers.map((answer, index) => (
-                        <div key={index}>{answer}</div>
-                    ))}
-                </div>
-            )}
+                )}
+            </div>
         </Layout>
     )
 };
